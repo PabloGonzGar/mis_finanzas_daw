@@ -25,7 +25,7 @@ class IncomeController extends Controller
 
 
         
-        return view('income.index',['title' => 'My incomes','second' => 'Spendings','enlace'=>'spending','table'=>$table , 'message' => 'Agregar uno nuevo' ,'type' => 'name' ]); 
+        return view('income.index',['title' => 'My incomes','second' => 'Spendings','enlace'=>'spending','table'=>$table , 'message' => 'Agregar uno nuevo' ]); 
 
         
     }

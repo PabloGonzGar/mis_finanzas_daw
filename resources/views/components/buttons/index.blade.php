@@ -1,13 +1,15 @@
-
-@if($type == 'src')
-<a href="" {{$attributes}}>
-    
+<div>
+    @if($attributes->has('href'))
+    <a {{ $attributes->has('class')? $attributes: $attributes->merge(['class'=>'bg-transparent hover:bg-blue-500 text-white-700 font-bold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded'])}} >
         {{ $message }}
-        
     </a>
-@else($type == 'name')
-<button type="submit" name="buttonIncomes" {{$attributes}}>
-    {{ $message }}
-</button>
-
-@endif
+    @elseif($attributes->has('name'))
+    <button type="submit" {{ $attributes->has('class')? $attributes: $attributes->merge(['class'=>'bg-transparent hover:bg-blue-500 text-white-700 font-bold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded'])}}>
+        {{ $message }}
+    </button>
+    @else
+    <button type="button" {{ $attributes->has('class')? $attributes: $attributes->merge(['class'=>'bg-transparent hover:bg-blue-500 text-white-700 font-bold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded'])}}>
+        {{ $message }}
+    </button>
+    @endif
+</div>
