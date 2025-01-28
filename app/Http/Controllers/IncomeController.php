@@ -22,7 +22,10 @@ class IncomeController extends Controller
                 ['04/08/2015','family','350 €']
             ]
         ];
-        return view('income.index',['title' => 'My incomes','second' => 'Spendings','enlace'=>'spending','table'=>$table]); 
+
+
+        
+        return view('income.index',['title' => 'My incomes','second' => 'Spendings','enlace'=>'spending','table'=>$table , 'message' => 'Agregar uno nuevo' ,'type' => 'name' ]); 
 
         
     }
