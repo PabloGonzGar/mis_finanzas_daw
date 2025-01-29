@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Income;
+use Illuminate\Support\Facades\Validator;
+
 
 class IncomeController extends Controller
 {
@@ -12,20 +15,21 @@ class IncomeController extends Controller
     public function index()
     {
         //Aquí la lógica de negocio para el index
-        $table = [
-            'heading' =>[
-                'date','category','amount'
-            ],
-            'content'=>[
-                ['27/12/2005','clients','15000 €'],
-                ['31/01/1997','friends','600 €'],
-                ['04/08/2015','family','350 €']
-            ]
-        ];
+        $incomes = Income::select('date','category','amount')->get()->toArray();
 
+        foreach($incomes as $income){
 
-        
-        return view('income.index',['title' => 'My incomes','second' => 'Spendings','enlace'=>'spending','table'=>$table , 'message' => 'Agregar uno nuevo' ]); 
+            $validate = Validator::make($income ,[
+                'date' => 'required|date',
+                'category' => 'required|string|max:255',
+                'amount' => 'required|numeric|min:0',
+            ]);
+
+            if($validate->fails()){
+                dd($validate->errors()->all());
+            } 
+        }
+        return view('income.index',['title' => 'My incomes','second' => 'Spendings','enlace'=>'spending','table'=>$incomes , 'message' => 'Agregar uno nuevo' ]); 
 
         
     }

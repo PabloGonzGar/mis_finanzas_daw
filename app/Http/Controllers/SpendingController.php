@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Spending;
+use Illuminate\Support\Facades\Validator;
 
-class SpendingsController extends Controller
+
+class SpendingController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -12,18 +15,23 @@ class SpendingsController extends Controller
     public function index()
     {
         //Aquí la lógica de negocio para el index
-        $table = [
-            'heading' =>[
-                'date','item','amount','price'
-            ],
-            'content'=>[
-                ['27/12/2005','graphic card','35','7000 €'],
-                ['31/01/1997','monitor','5','500 €'],
-                ['04/08/2015','keyboard','20','200 €'],
-                ['04/08/2025','mouse','10','50 €'],
-            ]
-        ];
-        return view('spendings.index',['title' => 'My spendings','second' => 'Incomes','enlace'=>'incomes','table'=>$table]);
+        $spendings = Spending::select('date','item','amount','price')->get()->toArray();
+
+        foreach($spendings as $spending){
+
+            $validate = Validator::make($spending ,[
+                'date' => 'required|date',
+                'item' => 'required|string|max:255',
+                'amount' => 'required|numeric|min:0',
+                'price' => 'required|numeric',
+            ]);
+
+            if($validate->fails()){
+                dd($validate->errors()->all());
+            } 
+        }
+
+        return view('spendings.index',['title' => 'My spendings','second' => 'Incomes','enlace'=>'incomes','table'=>$spendings]);
         
     }
 
