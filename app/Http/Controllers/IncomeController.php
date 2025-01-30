@@ -15,23 +15,21 @@ class IncomeController extends Controller
     public function index()
     {
         //Aquí la lógica de negocio para el index
-        $incomes = Income::select('date','category','amount')->get()->toArray();
+        $incomes = Income::select('date', 'category', 'amount')->get()->toArray();
 
-        foreach($incomes as $income){
+        foreach ($incomes as $income) {
 
-            $validate = Validator::make($income ,[
+            $validate = Validator::make($income, [
                 'date' => 'required|date',
                 'category' => 'required|string|max:255',
                 'amount' => 'required|numeric|min:0',
             ]);
 
-            if($validate->fails()){
+            if ($validate->fails()) {
                 dd($validate->errors()->all());
-            } 
+            }
         }
-        return view('income.index',['title' => 'My incomes','second' => 'Spendings','enlace'=>'spending','table'=>$incomes , 'message' => 'Agregar uno nuevo' ]); 
-
-        
+        return view('income.index', ['title' => 'My incomes', 'table' => $incomes]);
     }
 
     /**
@@ -39,8 +37,8 @@ class IncomeController extends Controller
      */
     public function create()
     {
-        //
-        return '<p>Esta es la página del create de incomes</p>';
+        //z
+        return view('income.create', ['title' => 'Add new Income', 'route' => route('incomes.create'), 'inputs' => ['category','date','amount']]);
     }
 
     /**
@@ -48,7 +46,26 @@ class IncomeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+
+        $validate = Validator::make($request->all(), [
+            'date' => 'required|date',
+            'category' => 'required|string|max:255',
+            'amount' => 'required|numeric|min:0',
+        ]);
+
+        if ($validate->fails()) {
+            dump('Algo ha fallado');
+        } else {
+            $income = new Income;
+
+            $income->category   = $request->category;
+            $income->date       = $request->date;
+            $income->amount     = $request->amount;
+
+            $income->save();
+            return redirect(route('incomes.index'));
+        }
     }
 
     /**
@@ -75,7 +92,7 @@ class IncomeController extends Controller
     public function update(Request $request, string $id)
     {
         //
-        
+
     }
 
     /**

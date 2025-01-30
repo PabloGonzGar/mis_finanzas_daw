@@ -17,31 +17,17 @@ class SpendingController extends Controller
         //Aquí la lógica de negocio para el index
         $spendings = Spending::select('date','item','amount','price')->get()->toArray();
 
-        foreach($spendings as $spending){
-
-            $validate = Validator::make($spending ,[
-                'date' => 'required|date',
-                'item' => 'required|string|max:255',
-                'amount' => 'required|numeric|min:0',
-                'price' => 'required|numeric',
-            ]);
-
-            if($validate->fails()){
-                dd($validate->errors()->all());
-            } 
-        }
-
-        return view('spendings.index',['title' => 'My spendings','second' => 'Incomes','enlace'=>'incomes','table'=>$spendings]);
+        return view('spendings.index',['title' => 'My spendings','table'=>$spendings]);
         
     }
-
+    
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
         //
-        return '<p>Esta es la página del create de spendings</p>';
+        return view('spendings.create',['title' => 'Add spendings', 'route' => route('spending.create'), 'inputs' => ['item','date','amount', 'price']]);
     }
 
     /**
@@ -50,6 +36,28 @@ class SpendingController extends Controller
     public function store(Request $request)
     {
         //
+
+        $validate = Validator::make($request->all(), [
+            'date' => 'required|date',
+            'item' => 'required|string|max:255',
+            'amount' => 'required|numeric|min:0',
+            'price' => 'required|numeric',
+        ]);
+
+        if ($validate->fails()) {
+            dump('Algo ha fallado');
+        } else {
+            $spendings = new Spending;
+
+            $spendings->item       = $request->item;
+            $spendings->date       = $request->date;
+            $spendings->amount     = $request->amount;
+            $spendings->price      = $request->price;
+
+
+            $spendings->save();
+            return redirect(route('spending.index'));
+        }
     }
 
     /**
