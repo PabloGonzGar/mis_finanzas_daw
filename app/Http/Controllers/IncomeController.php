@@ -15,20 +15,8 @@ class IncomeController extends Controller
     public function index()
     {
         //Aquí la lógica de negocio para el index
-        $incomes = Income::select('date', 'category', 'amount')->get()->toArray();
+        $incomes = Income::select('date', 'category', 'amount', 'id')->get()->toArray();
 
-        foreach ($incomes as $income) {
-
-            $validate = Validator::make($income, [
-                'date' => 'required|date',
-                'category' => 'required|string|max:255',
-                'amount' => 'required|numeric|min:0',
-            ]);
-
-            if ($validate->fails()) {
-                dd($validate->errors()->all());
-            }
-        }
         return view('income.index', ['title' => 'My incomes', 'table' => $incomes]);
     }
 
@@ -37,8 +25,8 @@ class IncomeController extends Controller
      */
     public function create()
     {
-        //z
-        return view('income.create', ['title' => 'Add new Income', 'route' => route('incomes.create'), 'inputs' => ['category','date','amount']]);
+        //
+        return view('income.create', ['title' => 'Add new Income', 'route' => route('incomes.create'), 'inputs' => ['category', 'date', 'amount']]);
     }
 
     /**
@@ -74,7 +62,6 @@ class IncomeController extends Controller
     public function show(string $id)
     {
         //
-        return '<p>Esta es la página del show de incomes</p>';
     }
 
     /**
@@ -83,7 +70,15 @@ class IncomeController extends Controller
     public function edit(string $id)
     {
         //
-        return '<p>Esta es la página del edit de incomes</p>';
+        $income = Income::select('date', 'category', 'amount')->where('id', $id)->first()->toArray(); 
+
+
+        return view('income.update', [
+            'title' => 'Update an Income',
+            'route' => route('incomes.update', ['id' => $id]), // para pasar id haciendo llamada a una ruta se hace de este modo route(namespace_ruta, ['clave', $valor])
+            'inputs' => ['category', 'date', 'amount'],
+            'income' => $income
+        ]);
     }
 
     /**
@@ -91,15 +86,34 @@ class IncomeController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        
+        $income_update = $request->toArray();
+      
 
+
+        $validate = Validator::make($income_update, [
+            'date' => 'required|date',
+            'category' => 'required|string|max:255',
+            'amount' => 'required|numeric|min:0',
+        ]);
+
+        if($validate->fails()){
+            dd("No has introducido  datos correctos");
+        }else{
+            unset($income_update['_token']);
+            unset($income_update['submit']);
+            $income_update = Income::where('id', $id)->update($income_update);
+            return redirect(route('incomes.index'));
+        }
+        
     }
-
+    
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-        //
+        Income::where('id',$id)->delete();
+        return redirect(route('incomes.index'));
     }
 }

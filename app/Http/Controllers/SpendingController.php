@@ -15,7 +15,7 @@ class SpendingController extends Controller
     public function index()
     {
         //Aquí la lógica de negocio para el index
-        $spendings = Spending::select('date','item','amount','price')->get()->toArray();
+        $spendings = Spending::select('date','item','amount','price','id')->get()->toArray();
 
         return view('spendings.index',['title' => 'My spendings','table'=>$spendings]);
         
@@ -74,8 +74,16 @@ class SpendingController extends Controller
      */
     public function edit(string $id)
     {
-        //
-        return '<p>Esta es la página del edit de spendings</p>';
+
+        $spending = Spending::select('date','item','amount','price')->where('id',$id)->first()->toArray();
+
+
+        return view('income.update', [
+            'title' => 'Update an Income',
+            'route' => route('spending.update', ['id' => $id]), // para pasar id haciendo llamada a una ruta se hace de este modo route(namespace_ruta, ['clave', $valor])
+            'inputs' => ['date','item','amount','price'],
+            'spending' => $spending
+        ]);
     }
 
     /**
@@ -83,15 +91,36 @@ class SpendingController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $spending_update = $request->toArray();
+      
+
+
+        $validate = Validator::make($spending_update, [
+            'date' => 'required|date',
+            'item' => 'required|string|max:255',
+            'amount' => 'required|numeric|min:0',
+            'price' => 'required|numeric',
+        ]);
+
+        if($validate->fails()){
+            dd("No has introducido  datos correctos");
+        }else{
+            unset($spending_update['_token']);
+            unset($spending_update['submit']);
+            $spending_update = Spending::where('id', $id)->update($spending_update);
+            return redirect(route('spending.index'));
+        }
         
     }
-
+    
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-        //
+        $spending_destroy = Spending::find($id);
+        $spending_destroy->delete();
+        return redirect(route('spending.index'));
+
     }
 }
