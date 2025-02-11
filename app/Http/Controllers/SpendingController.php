@@ -78,8 +78,8 @@ class SpendingController extends Controller
         $spending = Spending::select('date','item','amount','price')->where('id',$id)->first()->toArray();
 
 
-        return view('income.update', [
-            'title' => 'Update an Income',
+        return view('spendings.update', [
+            'title' => 'Update a Spending',
             'route' => route('spending.update', ['id' => $id]), // para pasar id haciendo llamada a una ruta se hace de este modo route(namespace_ruta, ['clave', $valor])
             'inputs' => ['date','item','amount','price'],
             'spending' => $spending

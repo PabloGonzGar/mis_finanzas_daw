@@ -35,15 +35,18 @@
                 </td>
                 @else
                 <td class="px-6 py-4">
-                    <x-buttons.index href="{{ url(request()->segment(1) . '/edit/' . $column) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
+                    <x-buttons.index href="{{ url(request()->segment(1) . '/edit/' . $column) }}" class="bg-info-500 hover:bg-yellow-700 text-white font-bold hover:text-white py-2 px-4 border border-yellow-500 hover:border-transparent rounded">
                         Editar 
                     </x-buttons.index>
                     <div class="mt-5"></div>
 
-                    
-                    <x-buttons.index href="{{ url(request()->segment(1) . '/delete/' . $column) }}" class="bg-red-500 hover:bg-red-700 text-white font-bold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded">
-                        Borrar
-                    </x-buttons.index>
+                    <form action="{{ url(request()->segment(1) . '/delete/' . $column) }}" method="post">
+                    @csrf
+                    @method('DELETE')
+                        <x-buttons.index type="submit" name="eliminar" class="bg-red-500 hover:bg-red-700 text-white font-bold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded">
+                            Borrar
+                        </x-buttons.index>
+                    </form>
                 </td>
 
                 @endif

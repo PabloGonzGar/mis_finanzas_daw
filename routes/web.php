@@ -26,7 +26,7 @@ Route::get('/incomes/edit/{id}', [IncomeController::class, 'edit'])->name('incom
 Route::post('/incomes/update/{id}', [IncomeController::class, 'update'])->name('incomes.update');
 
 //BORRAR
-Route::get('/incomes/delete/{id}', [IncomeController::class, 'destroy'])->name('incomes.destroy');
+Route::delete('/incomes/delete/{id}', [IncomeController::class, 'destroy'])->name('incomes.destroy');
 
 
 //RUTAS DE SPENDING---------------------------------------------------------------------------------------
@@ -39,4 +39,4 @@ Route::post('/spending/create', [SpendingController::class, 'store']);
 Route::get('/spending/edit/{id}', [SpendingController::class, 'edit'])->name('spending.edit');
 Route::post('/spending/update/{id}', [SpendingController::class, 'update'])->name('spending.update');
 
-Route::get('/spending/delete/{id}', [SpendingController::class, 'destroy'])->name('spending.destroy');
+Route::delete('/spending/delete/{id}', [SpendingController::class, 'destroy'])->name('spending.destroy');
