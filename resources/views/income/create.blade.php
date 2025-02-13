@@ -1,5 +1,5 @@
 <x-layouts.index :title="$title">
-    <x-createForm.index :route="$route" :inputs="$inputs">
-        <x-buttons.index name='submit'>Crear</x-buttons.index>
-    </x-createForm.index>
+    <x-form.form-create :route="$route" :inputs="$inputs">
+        <x-button name='submit'>Crear</x-button>
+    </x-form.form-create>
 </x-layouts.index>

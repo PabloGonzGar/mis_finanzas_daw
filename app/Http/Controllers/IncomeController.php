@@ -35,25 +35,24 @@ class IncomeController extends Controller
     public function store(Request $request)
     {
 
-
-        $validate = Validator::make($request->all(), [
+        $income = $request->validate([
             'date' => 'required|date',
             'category' => 'required|string|max:255',
             'amount' => 'required|numeric|min:0',
         ]);
 
-        if ($validate->fails()) {
-            dump('Algo ha fallado');
-        } else {
-            $income = new Income;
 
-            $income->category   = $request->category;
-            $income->date       = $request->date;
-            $income->amount     = $request->amount;
+        $income = new Income;
 
-            $income->save();
-            return redirect(route('incomes.index'));
-        }
+        $income->category   = $request->category;
+        $income->date       = $request->date;
+        $income->amount     = $request->amount;
+
+
+        $income->save();
+
+        session()->flash('message', 'Se ha creado con exito');
+        return redirect(route('incomes.index'));
     }
 
     /**
@@ -70,12 +69,12 @@ class IncomeController extends Controller
     public function edit(string $id)
     {
         //
-        $income = Income::select('date', 'category', 'amount')->where('id', $id)->first()->toArray(); 
+        $income = Income::select('date', 'category', 'amount')->where('id', $id)->first()->toArray();
 
 
         return view('income.update', [
             'title' => 'Update an Income',
-            'route' => route('incomes.update', ['id' => $id]), // para pasar id haciendo llamada a una ruta se hace de este modo route(namespace_ruta, ['clave', $valor])
+            'route' => route('incomes.update', ['income' => $id]), // para pasar id haciendo llamada a una ruta se hace de este modo route(namespace_ruta, ['clave', $valor])
             'inputs' => ['category', 'date', 'amount'],
             'income' => $income
         ]);
@@ -86,37 +85,29 @@ class IncomeController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        
-        $income_update = $request->toArray();
-      
 
-
-        $validate = Validator::make($income_update, [
+        $income_update = $request->validate([
             'date' => 'required|date',
             'category' => 'required|string|max:255',
             'amount' => 'required|numeric|min:0',
         ]);
 
-        if($validate->fails()){
-            dd("No has introducido  datos correctos");
-        }else{
-            unset($income_update['_token']);
-            unset($income_update['submit']);
-            $income_update = Income::where('id', $id)->update($income_update);
-            return redirect(route('incomes.index'));
-        }
-        
+
+        $income_update = Income::where('id', $id)->update($income_update);
+        session()->flash('message', 'Se ha actualizado el income con exito');
+
+        return redirect(route('incomes.index'));
     }
-    
+
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-        
+
         $income_destroy =  Income::find($id);
         $income_destroy->delete();
-        
+
         return redirect(route('incomes.index'));
     }
 }

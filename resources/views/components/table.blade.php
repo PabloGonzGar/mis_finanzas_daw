@@ -1,5 +1,7 @@
-<div class="relative overflow-x-auto">
-    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+<div class="relative overflow-x-auto rounded-lg drop-shadow">
+
+<x-alert></x-alert>
+    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 drop-shadow-lg">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
 
@@ -35,17 +37,17 @@
                 </td>
                 @else
                 <td class="px-6 py-4">
-                    <x-buttons.index href="{{ url(request()->segment(1) . '/edit/' . $column) }}" class="bg-info-500 hover:bg-yellow-700 text-white font-bold hover:text-white py-2 px-4 border border-yellow-500 hover:border-transparent rounded">
+                    <x-button href="{{ url(request()->segment(1) . '/' . $column) .'/edit' }}" class="bg-info-500 hover:bg-yellow-600 text-white font-bold hover:text-white py-2 px-4 border border-yellow-500 hover:border-transparent rounded">
                         Editar 
-                    </x-buttons.index>
+                    </x-button>
                     <div class="mt-5"></div>
 
-                    <form action="{{ url(request()->segment(1) . '/delete/' . $column) }}" method="post">
+                    <form action="{{ url(request()->segment(1) . '/' . $column) }}" method="post">
                     @csrf
                     @method('DELETE')
-                        <x-buttons.index type="submit" name="eliminar" class="bg-red-500 hover:bg-red-700 text-white font-bold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded">
+                        <x-button type="submit" name="eliminar" class="bg-red-500 hover:bg-red-700 text-white font-bold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded">
                             Borrar
-                        </x-buttons.index>
+                        </x-button>
                     </form>
                 </td>
 
