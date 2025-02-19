@@ -7,12 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Income extends Model
 {
-    use HasFactory;
 
     protected $fillable =[
-        'id',
         'date',
-        'category',
+        'category_id',
         'amount'
     ];
+
+
+    public function category(){
+        return $this->belongsTo(Category::class);
+    }
 }

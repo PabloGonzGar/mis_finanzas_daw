@@ -14,7 +14,10 @@ return new class extends Migration
         Schema::create('spendings', function (Blueprint $table) {
             $table->id();
             $table->integer('amount');
-            $table->string('item');
+            $table->foreignId('category_id')
+                ->constrained()
+                ->onUpdate('cascade')
+                ->onDelete('restrict');
             $table->date('date');
             $table->double('price');
             $table->timestamps();

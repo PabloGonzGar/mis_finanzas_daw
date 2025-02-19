@@ -1218,18 +1218,21 @@
         <x-navbar :links="[
             ['/incomes', 'Incomes', request()->is('incomes')],
             ['/spending', 'Spendings', request()->is('spending')],
+            ['/category', 'Categories', request()->is('category')],
             ]" 
         />
 
-        <header class="bg-white shadow-lx">
+        <header class="bg-white drop-shadow-lg">
             <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
                 <h1 class="text-3xl font-bold tracking-tight text-gray-900">{{$title}}</h1>
             </div>
         </header>
-        <main class="bg-gray-200 ">
+        <main >
             <div class="mx-auto max-w-7xl  px-4 py-6 sm:px-6 lg:px-8 ">
                 {{$slot}}
             </div>
         </main>
     </div>
+
+    @stack('scripts')
 </body>

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Income;
-use Illuminate\Support\Facades\Validator;
+use App\Models\Category;
 
 
 class IncomeController extends Controller
@@ -15,9 +15,21 @@ class IncomeController extends Controller
     public function index()
     {
         //Aquí la lógica de negocio para el index
-        $incomes = Income::select('date', 'category', 'amount', 'id')->get()->toArray();
+        $incomes = Income::with('category')->get()->map(function ($income) {
+            return [
+                'id' => $income->id,
+                'category' => ucfirst($income->category->name), 
+                'amount' => $income->amount,
+                'date' => $income->date,
+            ];
+        });
 
-        return view('income.index', ['title' => 'My incomes', 'table' => $incomes]);
+
+        $tableData['heading'] = ['Category', 'Amount', 'Date','Actions'];
+        $tableData['data'] = $incomes;
+
+
+        return view('income.index', ['title' => 'My incomes', 'table' => $tableData]);
     }
 
     /**
@@ -26,7 +38,10 @@ class IncomeController extends Controller
     public function create()
     {
         //
-        return view('income.create', ['title' => 'Add new Income', 'route' => route('incomes.create'), 'inputs' => ['category', 'date', 'amount']]);
+
+        
+        $categories = Category::all();
+        return view('income.create', ['title' => 'Add new Income', 'route' => '/incomes', 'inputs' => ['category', 'date', 'amount'], 'categories'=> $categories]);
     }
 
     /**
@@ -37,16 +52,16 @@ class IncomeController extends Controller
 
         $income = $request->validate([
             'date' => 'required|date',
-            'category' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
             'amount' => 'required|numeric|min:0',
         ]);
 
 
         $income = new Income;
 
-        $income->category   = $request->category;
-        $income->date       = $request->date;
-        $income->amount     = $request->amount;
+        $income->category_id    = $request->category_id;
+        $income->date           = $request->date;
+        $income->amount         = $request->amount;
 
 
         $income->save();
@@ -60,7 +75,21 @@ class IncomeController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $incomes = Income::with('category')->where('id',$id)->get()->map(function ($income) {
+            return [
+                'id' => $income->id,
+                'category' => ucfirst($income->category->name), 
+                'amount' => $income->amount,
+                'date' => $income->date,
+            ];
+        });
+
+
+        $tableData['heading'] = ['Category', 'Amount', 'Date','Actions'];
+        $tableData['data'] = $incomes;
+
+
+        return view('income.show', ['title' => 'My incomes', 'table' => $tableData]);
     }
 
     /**
@@ -69,13 +98,26 @@ class IncomeController extends Controller
     public function edit(string $id)
     {
         //
-        $income = Income::select('date', 'category', 'amount')->where('id', $id)->first()->toArray();
+        $income =  Income::with('category')->where('id',$id)->get()->map(function ($income) {
+            return [
+                'category' => ucfirst($income->category->name), 
+                'amount' => $income->amount,
+                'date' => $income->date,
+            ];
+        })->first();
+
+
+
+        //dd($income);
+
+        $categories = Category::all();
 
 
         return view('income.update', [
             'title' => 'Update an Income',
             'route' => route('incomes.update', ['income' => $id]), // para pasar id haciendo llamada a una ruta se hace de este modo route(namespace_ruta, ['clave', $valor])
             'inputs' => ['category', 'date', 'amount'],
+            'categories'=> $categories,
             'income' => $income
         ]);
     }
@@ -88,12 +130,14 @@ class IncomeController extends Controller
 
         $income_update = $request->validate([
             'date' => 'required|date',
-            'category' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
             'amount' => 'required|numeric|min:0',
         ]);
 
 
         $income_update = Income::where('id', $id)->update($income_update);
+
+
         session()->flash('message', 'Se ha actualizado el income con exito');
 
         return redirect(route('incomes.index'));

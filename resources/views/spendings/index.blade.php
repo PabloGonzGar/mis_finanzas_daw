@@ -5,7 +5,7 @@
 </x-button>
 
 <div class="mt-5">
-<x-table :table="$table">
+<x-table :tableData="$table">
 </x-tables>
 
 

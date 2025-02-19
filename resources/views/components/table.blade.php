@@ -1,48 +1,47 @@
-<div class="relative overflow-x-auto rounded-lg drop-shadow">
-
-<x-alert></x-alert>
-    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 drop-shadow-lg">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+<div class="relative overflow-x-auto shadow shadow-lg">
+    <x-alert></x-alert>
+    <table class="w-full text-sm text-center rtl:text-right text-gray-500 ">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50 ">
             <tr>
-
-
-                @foreach( $table[0] as $key => $column)
-                @if($key!='id')
+                @foreach ($tableData['heading'] as $heading)
                 <th scope="col" class="px-6 py-3">
-                    {{$key}}
+                    {{$heading}}
                 </th>
-                @endif
                 @endforeach
-
-                <th scope="col" class="px-6 py-3">
-                    Acciones
-                </th>
-
             </tr>
         </thead>
         <tbody>
+            @foreach ($tableData['data'] as $index => $row)
+            
+            <!-- Alternating row colors between white and light blue -->
 
-            @foreach ( $table as $rowKey =>$row)
-            @if (($rowKey+1)%2==0)
-            <tr class="bg-white border-b dark:bg-gray-700 dark:border-gray-700">
+            <tr class="{{ $loop->even ? 'bg-white' : 'bg-blue-100' }} border-b">
+                @foreach ($row as $key => $cell)
+                @if(($key != 'id'))
+                <!-- First index as <th> and others as <td> -->
+                @if ($loop->first)
+                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                    {{$cell}}
+                </th>
                 @else
-            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-
-                @endif
-                @foreach ($row as $columnKey => $column)
-
-                @if($columnKey != 'id')
-                <td class="px-6 py-4">
-                    {{$column}}
+                <td class="px-6 py-4 text-gray-900 whitespace-nowrap">
+                    {{$cell}}
                 </td>
-                @else
-                <td class="px-6 py-4">
-                    <x-button href="{{ url(request()->segment(1) . '/' . $column) .'/edit' }}" class="bg-info-500 hover:bg-yellow-600 text-white font-bold hover:text-white py-2 px-4 border border-yellow-500 hover:border-transparent rounded">
+                @endif
+                @endif
+                @endforeach
+                <td class="px-6 py-4  flex flex-row items-center justify-center gap-1 ">
+                    <x-button href="{{ url(request()->segment(1) . '/' . $row['id']) }}" class="mx-1  bg-emerald-500 hover:bg-emerald-600 text-white font-bold hover:text-white py-2 px-4 border border-emerald-500 hover:border-transparent rounded">
+                        Ver 
+                    </x-button>
+
+
+                    <x-button href="{{ url(request()->segment(1) . '/' . $row['id']) .'/edit' }}" class="m-0  bg-yellow-500 hover:bg-yellow-600 text-white font-bold hover:text-white py-2 px-4 border border-yellow-500 hover:border-transparent rounded">
                         Editar 
                     </x-button>
                     <div class="mt-5"></div>
 
-                    <form action="{{ url(request()->segment(1) . '/' . $column) }}" method="post">
+                    <form action="{{ url(request()->segment(1) . '/' . $row['id']) }}" method="post" class="border  my-0">
                     @csrf
                     @method('DELETE')
                         <x-button type="submit" name="eliminar" class="bg-red-500 hover:bg-red-700 text-white font-bold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded">
@@ -51,14 +50,7 @@
                     </form>
                 </td>
 
-                @endif
-
-                @endforeach
-
-
-
             </tr>
-
             @endforeach
         </tbody>
     </table>

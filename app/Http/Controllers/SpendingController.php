@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Spending;
+use App\Models\Category;
 use Illuminate\Support\Facades\Validator;
 
 
@@ -15,9 +16,24 @@ class SpendingController extends Controller
     public function index()
     {
         //Aquí la lógica de negocio para el index
-        $spendings = Spending::select('date', 'item', 'amount', 'price', 'id')->get()->toArray();
+        $spendings = Spending::with('category')->get()->map(function ($spending) {
+            return [
+                'id' => $spending->id,
+                'category' => ucfirst($spending->category->name), 
+                'price' => $spending->price,
+                'amount' => $spending->amount,
+                'date' => $spending->date,
+            ];
+        });
 
-        return view('spendings.index', ['title' => 'My spendings', 'table' => $spendings]);
+        ///dd($spendings);
+
+        $tableData['heading'] = ['Category','Price', 'Amount', 'Date','Actions'];
+        $tableData['data'] = $spendings;
+
+
+
+        return view('spendings.index', ['title' => 'My spendings', 'table' => $tableData]);
     }
 
     /**
@@ -26,7 +42,9 @@ class SpendingController extends Controller
     public function create()
     {
         //
-        return view('spendings.create', ['title' => 'Add spendings', 'route' => route('spending.create'), 'inputs' => ['item', 'date', 'amount', 'price']]);
+
+        $categories = Category::all();
+        return view('spendings.create', ['title' => 'Add spendings', 'route' => '/spending', 'inputs' => ['category', 'date', 'amount', 'price'], 'categories'=>$categories]);
     }
 
     /**
@@ -37,20 +55,24 @@ class SpendingController extends Controller
         //
         $spendings = $request->validate([
             'date' => 'required|date',
-            'item' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
             'amount' => 'required|numeric|min:0',
             'price' => 'required|numeric|max:-1',
         ]);
 
         $spendings = new Spending;
 
-        $spendings->item       = $request->item;
-        $spendings->date       = $request->date;
-        $spendings->amount     = $request->amount;
-        $spendings->price      = $request->price;
+        $spendings->category_id = $request->category_id;
+        $spendings->date        = $request->date;
+        $spendings->amount      = $request->amount;
+        $spendings->price       = $request->price;
+
+
 
         $spendings->save();
         session()->flash('message', 'Se ha creado el Sprending exitosamente');
+
+
         return redirect(route('spending.index'));
     }
 
@@ -59,8 +81,24 @@ class SpendingController extends Controller
      */
     public function show(string $id)
     {
-        //
-        return '<p>Esta es la página del show de spendings</p>';
+        $spendings = Spending::with('category')->where('id',$id)->get()->map(function ($spending) {
+            return [
+                'id' => $spending->id,
+                'category' => ucfirst($spending->category->name), 
+                'price' => $spending->price,
+                'amount' => $spending->amount,
+                'date' => $spending->date,
+            ];
+        });
+
+        ///dd($spendings);
+
+        $tableData['heading'] = ['Category','Price', 'Amount', 'Date','Actions'];
+        $tableData['data'] = $spendings;
+
+
+
+        return view('spendings.show', ['title' => 'My spendings', 'table' => $tableData]);
     }
 
     /**
@@ -69,14 +107,25 @@ class SpendingController extends Controller
     public function edit(string $id)
     {
 
-        $spending = Spending::select('date', 'item', 'amount', 'price')->where('id', $id)->first()->toArray();
+        $spendings = Spending::with('category')->where('id',$id)->get()->map(function ($spending) {
+            return [
+                'id' => $spending->id,
+                'category' => ucfirst($spending->category->name), 
+                'price' => $spending->price,
+                'amount' => $spending->amount,
+                'date' => $spending->date,
+            ];
+        })->first();
+        
 
+        $categories = Category::all();
 
         return view('spendings.update', [
             'title' => 'Update a Spending',
             'route' => route('spending.update', ['spending' => $id]), // para pasar id haciendo llamada a una ruta se hace de este modo route(namespace_ruta, ['clave', $valor])
-            'inputs' => ['date', 'item', 'amount', 'price'],
-            'spending' => $spending
+            'inputs' => ['category','date', 'amount', 'price'],
+            'spending' => $spendings,
+            'categories' => $categories
         ]);
     }
 
@@ -87,7 +136,7 @@ class SpendingController extends Controller
     {
         $spending_update = $request->validate([
             'date' => 'required|date',
-            'item' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
             'amount' => 'required|numeric|min:0',
             'price' => 'required|numeric|max:-1',
         ]);

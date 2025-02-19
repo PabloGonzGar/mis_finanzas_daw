@@ -7,13 +7,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Spending extends Model
 {
-    use HasFactory;
-
     protected $fillable =[
-        'id',
         'date',
-        'item',
         'amount',
+        'category_id',
         'price'
     ];
+
+
+    public function category(){
+        return $this->belongsTo(Category::class);
+    }
 }

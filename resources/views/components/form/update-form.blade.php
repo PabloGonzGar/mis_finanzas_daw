@@ -1,7 +1,7 @@
 <x-alert></x-alert>
 <form class="max-w-md mx-auto p-10 shadow-lg rounded-lg bg-white gap-5" method="POST" action="{{$route}}">
-@csrf
-@method('PUT')
+    @csrf
+    @method('PUT')
 
     @foreach ($inputs as $input)
     @php
@@ -14,19 +14,15 @@
     @endphp
 
     @if ($type == 'select')
-    <label for="{{ $input }}"
-        class="block py-2.5 px-0 w-full text-sm text-black bg-transparent dark:text-black">
-        {{ $input }}
-    </label>
+
     <div class="relative z-0 w-full mb-5 group">
-        <select
-            name="{{ $input }}"
-            id="{{ $input }}"
-            class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline">
-            <option value="{{$update[$input]}}" selected> {{$update[$input]}} </option>
-            <option value="Agua"> Agua </option>
-            <option value="Luz"> Luz </option>
-            <option value="Empresarios"> Empresarios </option>
+        <label for="categories" class="block  text-sm font-medium text-gray-900 ">Categoría</label>
+        <select name="category_id" id="categories" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full  p-2.5">
+
+            <option disabled selected>{{$update[$input]}}</option>
+            @foreach ($categories as $category)
+            <option value="{{$category->id}}">{{ucfirst($category->name)}}</option>
+            @endforeach
         </select>
 
         @else
@@ -50,6 +46,14 @@
 
             @endif
         </div>
+
+        @if ($errors->has($input))
+
+        <p class="text-s text-red-500 mb-5 -mt-5">{{$errors->first($input)}}</p>
+
+        @endif
+
+
         @endforeach
 
         {{$slot}}
